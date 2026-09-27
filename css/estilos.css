@@ -226,10 +226,15 @@ input:focus, select:focus { border-color: var(--azul); outline: none; box-shadow
 .grilla-tarjetas { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
 .tarjeta-veh {
   display: grid; gap: 8px; padding: 14px 16px;
-  background: var(--panel); border: 1px solid var(--borde); border-left: 4px solid var(--c, var(--azul));
+  background: var(--panel); border: 2px solid var(--c, var(--azul));
   border-radius: var(--radio); color: var(--texto);
+  /* Borde completo del color de la bodega, con un leve brillo (como el diseño de Juan) */
+  box-shadow: 0 0 10px -2px color-mix(in srgb, var(--c, var(--azul)) 55%, transparent);
 }
-.tarjeta-veh:hover { background: var(--panel-2); }
+.tarjeta-veh:hover {
+  background: var(--panel-2);
+  box-shadow: 0 0 16px -2px color-mix(in srgb, var(--c, var(--azul)) 75%, transparent);
+}
 .tarjeta-fila { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .tarjeta-fila.sub { margin: 0; }
 .tarjeta-fila.sub span:first-child { white-space: nowrap; }
@@ -256,7 +261,10 @@ input:focus, select:focus { border-color: var(--azul); outline: none; box-shadow
 .volver { color: var(--texto-2); font-size: 14px; justify-self: start; }
 .volver:hover { color: var(--texto); }
 
-.ficha { border-top: 3px solid var(--c, var(--azul)); }
+.ficha {
+  border: 2px solid var(--c, var(--azul));
+  box-shadow: 0 0 12px -2px color-mix(in srgb, var(--c, var(--azul)) 55%, transparent);
+}
 .ficha-cabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
 .ficha-cabecera h1 { font-size: 20px; margin-bottom: 8px; }
 .lista-datos { margin: 0; }
@@ -306,7 +314,8 @@ input:focus, select:focus { border-color: var(--azul); outline: none; box-shadow
 }
 
 @media print {
-  @page { margin: 12mm; }
+  @page { margin: 0; }  /* sin margen, Chrome no agrega fecha, título ni dirección */
+  #etiqueta-impresion { padding: 15mm 0; }
   body { background: #fff !important; }
   body > *:not(#etiqueta-impresion) { display: none !important; }
   #etiqueta-impresion { display: block !important; }

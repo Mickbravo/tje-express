@@ -82,7 +82,8 @@
   }
 
   async function cerrarSesion() {
-    try { await db.auth.signOut(); } finally { location.replace('index.html'); }
+    // scope 'local': cierra la sesión solo en este equipo (no en el celular ni en otros)
+    try { await db.auth.signOut({ scope: 'local' }); } finally { location.replace('index.html'); }
   }
 
   window.TJE = { db, ROLES, traducirError, sesionActual, obtenerPerfil, iniciarSesion, exigirSesion, cerrarSesion };

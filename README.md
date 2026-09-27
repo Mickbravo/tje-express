@@ -21,6 +21,7 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 
 ## Versiones
 
+- **v0.3.1** · Tarjetas y ficha con el borde completo del color de la bodega; "Cerrar sesión" solo en el equipo actual; etiqueta QR sin encabezado ni pie de Chrome.
 - **v0.3.0** · Foto de cada camioneta (reducida a ~200 KB), código QR imprimible, búsqueda sin importar tildes y ficha más cómoda en pantallas grandes.
 - **v0.2.0** · Módulo Vehículos: lista por bodega, ficha, agregar y editar (oficina y admin).
 - **v0.1.1** · Iniciales del avatar sin símbolos; menú lateral muestra el nombre completo ("Mis documentos").
