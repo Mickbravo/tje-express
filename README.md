@@ -19,4 +19,5 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 
 ## Versiones
 
+- **v0.1.1** · Iniciales del avatar sin símbolos; menú lateral muestra el nombre completo ("Mis documentos").
 - **v0.1.0** · Estructura base, inicio de sesión y menú según rol (admin, oficina, chofer).

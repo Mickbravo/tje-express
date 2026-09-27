@@ -27,6 +27,11 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     (ICONOS[n] || '') + '</svg>';
 
+  // Iniciales y primer nombre ignorando símbolos: "[PRUEBA] Oficina" → "PO"
+  const soloLetras = (t) => String(t || '').replace(/[^\p{L}\s]/gu, ' ').split(/\s+/).filter(Boolean);
+  const iniciales = (t) => soloLetras(t).slice(0, 2).map((p) => p[0].toUpperCase()).join('') || '?';
+  const primerNombre = (t) => soloLetras(t)[0] || '';
+
   const escapar = (t) =>
     String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -100,15 +105,14 @@
     // Usuario
     $('usuario-nombre').textContent = perfil.nombre;
     $('usuario-rol').textContent = TJE.ROLES[perfil.rol] || perfil.rol;
-    $('avatar').textContent = perfil.nombre
-      .split(/\s+/).filter(Boolean).slice(0, 2).map((p) => p[0].toUpperCase()).join('');
+    $('avatar').textContent = iniciales(perfil.nombre);
     $('btn-salir').innerHTML = icono('salir');
     $('btn-salir').addEventListener('click', () => {
       if (confirm('¿Cerrar sesión en este equipo?')) TJE.cerrarSesion();
     });
 
     // Menú lateral (escritorio): todo
-    $('menu-lateral').innerHTML = menu.map(itemMenu).join('');
+    $('menu-lateral').innerHTML = menu.map((m) => itemMenu(m)).join('');
 
     // Barra inferior (celular): los principales + "Más" si sobran
     const enBarra = menu.filter((m) => m.barra);
@@ -116,7 +120,7 @@
     let html = enBarra.map((m) => itemMenu(m, true)).join('');
     if (resto.length) {
       html += '<button type="button" class="menu-item" id="btn-mas">' + icono('mas') + '<span>Más</span></button>';
-      $('menu-mas').innerHTML = resto.map(itemMenu).join('');
+      $('menu-mas').innerHTML = resto.map((m) => itemMenu(m)).join('');
     }
     $('menu-inferior').innerHTML = html;
     $('menu-inferior').style.setProperty('--columnas', enBarra.length + (resto.length ? 1 : 0));
@@ -177,7 +181,7 @@
 
     $('contenido').innerHTML =
       '<section class="panel bienvenida">' +
-        '<h1>Hola, ' + escapar(perfil.nombre.split(' ')[0]) + '</h1>' +
+        '<h1>Hola, ' + escapar(primerNombre(perfil.nombre)) + '</h1>' +
         '<dl class="datos">' +
           '<div><dt>Empresa</dt><dd>' + escapar(empresa) + '</dd></div>' +
           '<div><dt>Rol</dt><dd>' + escapar(TJE.ROLES[perfil.rol]) + '</dd></div>' +
