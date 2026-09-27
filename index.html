@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <title>TJE Express · Iniciar sesión</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚚</text></svg>">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="pagina-login">
+  <main class="login">
+    <div class="login-marca">
+      <div class="logo logo-grande"><b>TJE</b> EXPRESS</div>
+      <p>Gestión de flota, rutas y GPS</p>
+    </div>
+
+    <form id="form-login" class="login-tarjeta" novalidate>
+      <h1>Iniciar sesión</h1>
+
+      <label for="correo">Correo</label>
+      <input id="correo" type="email" autocomplete="username" inputmode="email" placeholder="nombre@correo.cl" required>
+
+      <label for="clave">Contraseña</label>
+      <div class="campo-clave">
+        <input id="clave" type="password" autocomplete="current-password" required>
+        <button type="button" id="ver-clave" class="btn-icono" aria-label="Mostrar contraseña">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+
+      <p id="mensaje" class="mensaje" role="alert" hidden></p>
+
+      <button type="submit" id="btn-ingresar" class="btn btn-primario">Ingresar</button>
+      <p class="ayuda">¿Olvidaste tu contraseña? Pide a la oficina que la restablezca.</p>
+    </form>
+
+    <footer class="login-pie">TJELabs · v<span data-version></span></footer>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/sesion.js"></script>
+  <script src="js/login.js"></script>
+</body>
+</html>

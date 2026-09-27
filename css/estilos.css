@@ -1,0 +1,213 @@
+/* =====================================================================
+   TJE EXPRESS · estilos.css
+   Estilo oscuro de las capturas de Juan. Un solo diseño que se adapta
+   a celular (menú abajo) y escritorio (menú a la izquierda).
+   Fuente del sistema: no se descarga nada extra (ahorro de datos).
+   ===================================================================== */
+:root {
+  --fondo: #07111f;
+  --panel: #0c1a2c;
+  --panel-2: #112239;
+  --borde: #1c3150;
+  --texto: #e7eef7;
+  --texto-2: #8fa4be;
+  --azul: #1e90ff;       /* Pudahuel y acción principal */
+  --naranjo: #ff8c00;    /* La Reina */
+  --verde: #2ecc71;
+  --rojo: #ef4444;
+  --radio: 12px;
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: inherit; }
+html, body { height: 100%; margin: 0; }
+body {
+  background: var(--fondo);
+  color: var(--texto);
+  font: 15px/1.5 var(--fuente);
+  -webkit-font-smoothing: antialiased;
+}
+[hidden] { display: none !important; }
+h1, h2 { margin: 0; line-height: 1.25; }
+a { color: inherit; text-decoration: none; }
+:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+svg { width: 22px; height: 22px; flex: none; }
+
+/* ---------- Logo ---------- */
+.logo { font-size: 22px; letter-spacing: .02em; font-weight: 300; white-space: nowrap; }
+.logo b { font-weight: 800; }
+.logo-grande { font-size: 34px; }
+.logo-chico { font-size: 15px; }
+
+/* ---------- Botones y campos ---------- */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 46px; padding: 0 20px; border: 0; border-radius: 10px;
+  font: 600 16px var(--fuente); cursor: pointer;
+}
+.btn:disabled { opacity: .6; cursor: wait; }
+.btn-primario { background: var(--azul); color: #fff; }
+.btn-primario:hover:not(:disabled) { background: #3aa0ff; }
+.btn-secundario { background: var(--panel-2); color: var(--texto); border: 1px solid var(--borde); }
+.btn-icono {
+  display: inline-grid; place-items: center; width: 40px; height: 40px;
+  background: transparent; border: 0; border-radius: 8px; color: var(--texto-2); cursor: pointer;
+}
+.btn-icono:hover, .btn-icono.activo { color: var(--texto); background: var(--panel-2); }
+
+label { display: block; margin: 16px 0 6px; font-size: 14px; color: var(--texto-2); }
+input {
+  width: 100%; height: 48px; padding: 0 14px;
+  background: var(--fondo); color: var(--texto);
+  border: 1px solid var(--borde); border-radius: 10px;
+  font: 16px var(--fuente); /* 16px evita el zoom automático en iPhone */
+}
+input:focus { border-color: var(--azul); outline: none; box-shadow: 0 0 0 3px rgba(30,144,255,.25); }
+
+/* =====================================================================
+   PANTALLA DE INICIO DE SESIÓN
+   ===================================================================== */
+.pagina-login {
+  background:
+    radial-gradient(900px 500px at 15% -10%, rgba(30,144,255,.18), transparent 60%),
+    radial-gradient(700px 400px at 110% 110%, rgba(255,140,0,.12), transparent 60%),
+    var(--fondo);
+}
+.login {
+  min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 32px 20px;
+}
+.login-marca { text-align: center; margin-bottom: 28px; }
+.login-marca p { margin: 6px 0 0; color: var(--texto-2); }
+.login-tarjeta {
+  width: 100%; max-width: 400px; padding: 28px 24px;
+  background: var(--panel); border: 1px solid var(--borde); border-radius: 16px;
+  border-top: 3px solid var(--azul);
+}
+.login-tarjeta h1 { font-size: 20px; font-weight: 600; }
+.campo-clave { position: relative; }
+.campo-clave input { padding-right: 52px; }
+.campo-clave .btn-icono { position: absolute; right: 4px; top: 4px; }
+.login-tarjeta .btn { width: 100%; margin-top: 22px; }
+.mensaje {
+  margin: 16px 0 0; padding: 10px 12px; border-radius: 8px; font-size: 14px;
+  background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.4); color: #fca5a5;
+}
+.ayuda { margin: 16px 0 0; text-align: center; font-size: 13px; color: var(--texto-2); }
+.login-pie { margin-top: 24px; font-size: 13px; color: var(--texto-2); }
+
+/* =====================================================================
+   APP (después de entrar)
+   ===================================================================== */
+.cargando {
+  height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; padding: 24px; text-align: center; color: var(--texto-2);
+}
+
+/* --- Celular (diseño base) --- */
+.app { min-height: 100%; display: flex; flex-direction: column; }
+.lateral, .solo-escritorio { display: none; }
+.superior {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px 16px; background: var(--fondo); border-bottom: 1px solid var(--borde);
+}
+.superior .logo { font-size: 19px; }
+.usuario { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.usuario-datos { display: none; min-width: 0; }
+.usuario-datos strong, .usuario-datos small { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.usuario-datos small { color: var(--texto-2); font-size: 12px; }
+.avatar {
+  display: grid; place-items: center; width: 36px; height: 36px; flex: none;
+  border-radius: 50%; background: var(--panel-2); border: 1px solid var(--borde);
+  font-size: 13px; font-weight: 700;
+}
+.contenido {
+  flex: 1; display: grid; gap: 16px; align-content: start;
+  padding: 16px 16px calc(84px + env(safe-area-inset-bottom, 0px));
+  width: 100%; max-width: 1100px; margin: 0 auto;
+}
+
+.menu-inferior {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 6;
+  display: grid; grid-template-columns: repeat(var(--columnas, 5), 1fr);
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom, 0px));
+  background: var(--panel); border-top: 1px solid var(--borde);
+}
+.menu-inferior .menu-item {
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+  padding: 6px 2px; border: 0; background: none; font: 11px var(--fuente);
+  color: var(--texto-2); cursor: pointer; border-radius: 8px;
+}
+.menu-inferior .menu-item.activo { color: var(--azul); }
+
+.hoja { position: fixed; inset: 0; z-index: 7; background: rgba(0,0,0,.5); display: flex; align-items: flex-end; }
+.hoja-panel {
+  width: 100%; padding: 12px 12px calc(80px + env(safe-area-inset-bottom, 0px));
+  background: var(--panel); border-top: 1px solid var(--borde); border-radius: 16px 16px 0 0;
+}
+
+/* Ítems del menú (lateral y hoja "Más") */
+.menu { display: grid; gap: 2px; }
+.menu .menu-item {
+  display: flex; align-items: center; gap: 12px; padding: 11px 14px;
+  border-radius: 10px; color: var(--texto-2); font-size: 15px;
+}
+.menu .menu-item:hover { background: var(--panel-2); color: var(--texto); }
+.menu .menu-item.activo { background: rgba(30,144,255,.14); color: var(--texto); box-shadow: inset 3px 0 0 var(--azul); }
+
+/* --- Paneles de contenido --- */
+.panel { background: var(--panel); border: 1px solid var(--borde); border-radius: var(--radio); padding: 20px; }
+.panel h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+.bienvenida h1 { font-size: 24px; font-weight: 700; }
+.datos { margin: 16px 0 0; display: grid; gap: 12px; }
+.datos div { display: grid; gap: 2px; }
+.datos dt { font-size: 13px; color: var(--texto-2); }
+.datos dd { margin: 0; overflow-wrap: anywhere; }
+.chequeos { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; color: var(--texto-2); }
+.chequeos li { display: flex; align-items: center; gap: 10px; }
+.chequeos li::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--borde); flex: none; }
+.chequeos li.ok::before { background: var(--verde); }
+.chequeos li.error { color: #fca5a5; }
+.chequeos li.error::before { background: var(--rojo); }
+.chequeos b { color: var(--texto); }
+
+.vacio { text-align: center; padding: 48px 20px; }
+.vacio-icono {
+  display: inline-grid; place-items: center; width: 64px; height: 64px; margin-bottom: 14px;
+  border-radius: 50%; background: var(--panel-2); color: var(--azul);
+}
+.vacio-icono svg { width: 30px; height: 30px; }
+.vacio h1 { font-size: 20px; }
+.vacio p { max-width: 42ch; margin: 8px auto 16px; color: var(--texto-2); }
+.etiqueta {
+  display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px;
+  background: rgba(255,140,0,.14); color: var(--naranjo); border: 1px solid rgba(255,140,0,.35);
+}
+
+/* --- Escritorio (pantallas de 900 px o más) --- */
+@media (min-width: 900px) {
+  .app {
+    display: grid; grid-template-columns: 250px 1fr; grid-template-rows: auto 1fr;
+    height: 100%; min-height: 0;
+  }
+  .lateral {
+    grid-row: 1 / 3; display: flex; flex-direction: column; gap: 24px;
+    padding: 20px 14px; background: var(--panel); border-right: 1px solid var(--borde); overflow-y: auto;
+  }
+  .lateral > .logo { padding: 0 10px; }
+  .lateral-pie { margin-top: auto; padding: 0 10px; display: grid; gap: 2px; }
+  .lateral-pie small { color: var(--texto-2); font-size: 12px; }
+  .solo-escritorio { display: block; }
+  .solo-movil, .menu-inferior, .hoja { display: none !important; }
+  .superior { position: static; padding: 14px 28px; }
+  .superior h2 { font-size: 18px; font-weight: 600; }
+  .usuario-datos { display: block; }
+  .contenido { padding: 28px; overflow-y: auto; margin: 0; max-width: none; }
+  .datos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

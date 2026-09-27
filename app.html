@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <title>TJE Express</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚚</text></svg>">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body class="pagina-app">
+  <!-- Pantalla de carga mientras se revisa la sesión -->
+  <div id="cargando" class="cargando">
+    <div class="logo logo-grande"><b>TJE</b> EXPRESS</div>
+    <p id="cargando-texto">Cargando…</p>
+    <button id="btn-reintentar" class="btn btn-secundario" hidden>Reintentar</button>
+  </div>
+
+  <div id="app" class="app" hidden>
+    <!-- Menú lateral (escritorio) -->
+    <aside class="lateral">
+      <div class="logo"><b>TJE</b> EXPRESS</div>
+      <nav id="menu-lateral" class="menu" aria-label="Menú principal"></nav>
+      <div class="lateral-pie">
+        <div class="logo logo-chico"><b>TJE</b> EXPRESS</div>
+        <small>Gestión de flota</small>
+        <small>v<span data-version></span></small>
+      </div>
+    </aside>
+
+    <!-- Barra superior -->
+    <header class="superior">
+      <div class="logo solo-movil"><b>TJE</b> EXPRESS</div>
+      <h2 id="titulo-seccion" class="solo-escritorio"></h2>
+      <div class="usuario">
+        <div id="avatar" class="avatar" aria-hidden="true"></div>
+        <div class="usuario-datos">
+          <strong id="usuario-nombre"></strong>
+          <small id="usuario-rol"></small>
+        </div>
+        <button id="btn-salir" class="btn-icono" aria-label="Cerrar sesión" title="Cerrar sesión"></button>
+      </div>
+    </header>
+
+    <!-- Contenido de cada sección -->
+    <main id="contenido" class="contenido"></main>
+
+    <!-- Menú inferior (celular) -->
+    <nav id="menu-inferior" class="menu-inferior" aria-label="Menú"></nav>
+
+    <!-- Hoja "Más" (celular) -->
+    <div id="hoja-mas" class="hoja" hidden>
+      <div class="hoja-panel">
+        <nav id="menu-mas" class="menu"></nav>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/sesion.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
