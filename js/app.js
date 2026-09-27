@@ -35,6 +35,9 @@
   const escapar = (t) =>
     String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
+  // Utilidades compartidas con los módulos (vehiculos.js, etc.)
+  window.TJE_UI = { icono, escapar };
+
   // ---------- Menús por rol ----------
   // "barra: true" = aparece en la barra inferior del celular.
   const MENU_OFICINA = [
@@ -64,7 +67,6 @@
   const PROXIMAMENTE = {
     mapa: 'Todas las camionetas en un solo mapa, en tiempo real.',
     conductores: 'Ficha de cada chofer: datos personales, laborales y foto.',
-    vehiculos: 'Ficha de cada camioneta, con foto y código QR imprimible.',
     rutas: 'Planificar rutas y asignarlas a chofer y camioneta (módulo de RutasJuan).',
     documentos: 'Licencias, SOAP, revisión técnica y sus vencimientos.',
     mantencion: 'Kilometraje, próximas mantenciones e historial de costos.',
@@ -145,7 +147,9 @@
   }
 
   // ---------- Navegación entre secciones ----------
-  function irA(id) {
+  // La dirección puede traer sub-rutas: "vehiculos/<id>/editar"
+  function irA(ruta) {
+    const [id, ...resto] = String(ruta || '').split('/');
     const item = menu.find((m) => m.id === id) || menu[0];
     if (!item) return;
     document.querySelectorAll('.menu-item[data-id]').forEach((a) => {
@@ -158,7 +162,11 @@
     const btnMas = $('btn-mas');
     if (btnMas) btnMas.classList.toggle('activo', !item.barra);
 
+    window.scrollTo(0, 0);
+    $('contenido').scrollTop = 0;
     if (item.id === 'inicio') return pintarInicio();
+    const modulo = (window.TJE_MODULOS || {})[item.id];
+    if (modulo) return modulo.pintar($('contenido'), perfil, item.id === id ? resto : []);
     pintarProximamente(item);
   }
 

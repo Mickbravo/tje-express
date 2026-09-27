@@ -59,13 +59,14 @@ svg { width: 22px; height: 22px; flex: none; }
 .btn-icono:hover, .btn-icono.activo { color: var(--texto); background: var(--panel-2); }
 
 label { display: block; margin: 16px 0 6px; font-size: 14px; color: var(--texto-2); }
-input {
+input, select {
   width: 100%; height: 48px; padding: 0 14px;
   background: var(--fondo); color: var(--texto);
   border: 1px solid var(--borde); border-radius: 10px;
   font: 16px var(--fuente); /* 16px evita el zoom automático en iPhone */
 }
-input:focus { border-color: var(--azul); outline: none; box-shadow: 0 0 0 3px rgba(30,144,255,.25); }
+select { appearance: auto; }
+input:focus, select:focus { border-color: var(--azul); outline: none; box-shadow: 0 0 0 3px rgba(30,144,255,.25); }
 
 /* =====================================================================
    PANTALLA DE INICIO DE SESIÓN
@@ -208,6 +209,77 @@ input:focus { border-color: var(--azul); outline: none; box-shadow: 0 0 0 3px rg
   .usuario-datos { display: block; }
   .contenido { padding: 28px; overflow-y: auto; margin: 0; max-width: none; }
   .datos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+
+/* =====================================================================
+   MÓDULOS (v0.2.0): barra superior, tarjetas, ficha y formulario
+   ===================================================================== */
+.barra-modulo { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.titulo-modulo { font-size: 22px; font-weight: 700; }
+.sub { color: var(--texto-2); font-size: 14px; margin: 4px 0 0; }
+.barra-acciones { display: flex; flex-wrap: wrap; gap: 10px; width: 100%; }
+.barra-acciones .btn { order: -1; width: 100%; }
+.buscador { flex: 1 1 100%; min-width: 0; height: 46px; }
+.btn { text-decoration: none; }
+
+.grilla-tarjetas { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.tarjeta-veh {
+  display: grid; gap: 8px; padding: 14px 16px;
+  background: var(--panel); border: 1px solid var(--borde); border-left: 4px solid var(--c, var(--azul));
+  border-radius: var(--radio); color: var(--texto);
+}
+.tarjeta-veh:hover { background: var(--panel-2); }
+.tarjeta-fila { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.tarjeta-fila.sub { margin: 0; }
+.tarjeta-fila.sub span:first-child { white-space: nowrap; }
+.tarjeta-fila.sub span:last-child { text-align: right; }
+.tarjeta-modelo { font-weight: 600; }
+.bodega-etq { color: var(--c, var(--azul)); font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+
+/* Patente con aspecto de placa chilena */
+.placa {
+  justify-self: start; padding: 2px 10px; border-radius: 6px;
+  background: #f4f6f8; color: #10151c; border: 2px solid #10151c;
+  font: 700 17px/1.4 ui-monospace, "Cascadia Mono", Consolas, monospace; letter-spacing: .06em;
+}
+.placa-grande { font-size: 22px; margin-bottom: 10px; display: inline-block; }
+
+.pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pill-operativo { background: rgba(46,204,113,.15); color: #6ee7a0; }
+.pill-en_mantencion { background: rgba(245,197,24,.15); color: #f5d24b; }
+.pill-fuera_de_servicio { background: rgba(239,68,68,.15); color: #fca5a5; }
+
+.aviso { margin: 0; padding: 10px 14px; border-radius: 10px; font-size: 14px; }
+.aviso-error { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.4); color: #fca5a5; }
+.aviso-ok { background: rgba(46,204,113,.12); border: 1px solid rgba(46,204,113,.4); color: #86efac; }
+.volver { color: var(--texto-2); font-size: 14px; justify-self: start; }
+.volver:hover { color: var(--texto); }
+
+.ficha { border-top: 3px solid var(--c, var(--azul)); }
+.ficha-cabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.ficha-cabecera h1 { font-size: 20px; margin-bottom: 8px; }
+.lista-datos { margin: 0; }
+.lista-datos div { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--borde); }
+.lista-datos div:last-child { border-bottom: 0; }
+.lista-datos dt { color: var(--texto-2); }
+.lista-datos dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.proximamente { opacity: .7; }
+
+.formulario { max-width: 860px; width: 100%; }
+.formulario h1 { font-size: 20px; margin-bottom: 4px; }
+.campos { display: grid; gap: 0 16px; grid-template-columns: 1fr; }
+.campo label { margin-top: 14px; }
+.formulario .aviso { margin-top: 16px; }
+.acciones { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+#f-patente { text-transform: uppercase; font-family: ui-monospace, Consolas, monospace; letter-spacing: .06em; }
+
+@media (min-width: 700px) {
+  .barra-acciones { width: auto; }
+  .barra-acciones .btn { order: 0; width: auto; }
+  .buscador { width: 300px; flex: none; }
+  .campos { grid-template-columns: 1fr 1fr; }
+  .campo-ancho { grid-column: 1 / -1; }
 }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

@@ -17,6 +17,9 @@
   // Convierte los errores técnicos (en inglés) en mensajes claros.
   function traducirError(err) {
     const m = String((err && err.message) || '').toLowerCase();
+    if (err && err.code === '23505') return 'Ya existe un registro con ese mismo dato.';
+    if ((err && err.code === '42501') || m.includes('row-level security') || m.includes('permission denied'))
+      return 'No tienes permiso para hacer esto.';
     if (m.includes('invalid login credentials')) return 'Correo o contraseña incorrectos.';
     if (m.includes('email not confirmed')) return 'Este correo aún no está confirmado. Pide a la oficina que lo confirme.';
     if (m.includes('failed to fetch') || m.includes('network') || m.includes('load failed'))

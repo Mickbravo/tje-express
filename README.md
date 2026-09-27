@@ -16,8 +16,10 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 | `js/sesion.js` | Entrar, salir y saber quién soy |
 | `js/login.js` | Lógica de la pantalla de inicio de sesión |
 | `js/app.js` | Menú, navegación y secciones |
+| `js/vehiculos.js` | Módulo Vehículos: lista, ficha, agregar y editar |
 
 ## Versiones
 
+- **v0.2.0** · Módulo Vehículos: lista por bodega, ficha, agregar y editar (oficina y admin).
 - **v0.1.1** · Iniciales del avatar sin símbolos; menú lateral muestra el nombre completo ("Mis documentos").
 - **v0.1.0** · Estructura base, inicio de sesión y menú según rol (admin, oficina, chofer).
