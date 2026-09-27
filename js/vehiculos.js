@@ -22,7 +22,10 @@
   let turno = 0;            // evita que una carga lenta pinte sobre otra pantalla
   let avisoPendiente = '';  // mensaje "Guardado ✓" para mostrar en la ficha
 
+  const QR_LIB = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
   const esc = (t) => window.TJE_UI.escapar(t);
+  // "Citroën" y "citroen" cuentan como lo mismo al buscar
+  const normalizar = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const numero = (n) => (n == null || n === '' ? '—' : Number(n).toLocaleString('es-CL'));
   const limpiarPatente = (p) => String(p || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
   const formatoPatente = (p) => {
@@ -87,7 +90,7 @@
 
     // Búsqueda en el propio equipo (no gasta datos)
     document.getElementById('veh-buscar').addEventListener('input', (ev) => {
-      const q = ev.target.value.trim().toLowerCase().replace(/[^a-z0-9áéíóúñ ]/g, '');
+      const q = normalizar(ev.target.value).replace(/[^a-z0-9 ]/g, '').trim();
       document.querySelectorAll('#veh-grilla .tarjeta-veh').forEach((t) => {
         t.hidden = q && !t.dataset.buscar.includes(q);
       });
@@ -96,8 +99,8 @@
 
   function tarjeta(v) {
     const c = colorBodega(v.bodega);
-    const buscar = [limpiarPatente(v.patente), v.marca, v.modelo, v.conductor && v.conductor.nombre]
-      .filter(Boolean).join(' ').toLowerCase();
+    const buscar = normalizar([limpiarPatente(v.patente), v.marca, v.modelo, v.conductor && v.conductor.nombre]
+      .filter(Boolean).join(' '));
     return '<a class="tarjeta-veh" style="--c:' + c + '" href="#vehiculos/' + esc(v.id) + '" data-buscar="' + esc(buscar) + '">' +
         '<div class="tarjeta-fila">' +
           '<span class="bodega-etq">' + esc(v.bodega ? v.bodega.nombre : 'Sin bodega') + '</span>' +
@@ -119,7 +122,7 @@
     cont.innerHTML = '<p class="sub">Cargando…</p>';
     const { data: v, error } = await TJE.db
       .from('vehiculos')
-      .select(COLUMNAS_LISTA + ', gps_imei')
+      .select(COLUMNAS_LISTA + ', gps_imei, empresa_id, foto_path, qr_codigo')
       .eq('id', id)
       .maybeSingle();
     if (miTurno !== turno) return;
@@ -156,8 +159,119 @@
           fila('GPS', esc(v.gps_imei ? 'IMEI ' + v.gps_imei : 'Sin GPS instalado')) +
         '</dl>' +
       '</section>' +
-      '<section class="panel proximamente"><h2>Foto y código QR</h2>' +
-        '<p class="sub">Se agregarán en la próxima versión.</p></section>';
+      '<section class="panel foto-qr">' +
+        '<div class="bloque">' +
+          '<h2>Foto</h2>' +
+          '<div id="veh-foto" class="foto-marco"><span class="sub">' + (v.foto_path ? 'Cargando foto…' : 'Sin foto') + '</span></div>' +
+          (puedeEditar(perfil)
+            ? '<label class="btn btn-secundario btn-archivo"><span id="veh-foto-txt">' + (v.foto_path ? 'Cambiar foto' : 'Subir foto') + '</span>' +
+              '<input id="veh-foto-input" type="file" accept="image/*" hidden></label>'
+            : '') +
+          '<p id="veh-foto-estado" class="sub" hidden></p>' +
+        '</div>' +
+        (puedeEditar(perfil)
+          ? '<div class="bloque">' +
+              '<h2>Código QR</h2>' +
+              '<div id="veh-qr" class="qr-marco"><span class="sub">Generando…</span></div>' +
+              '<button type="button" id="veh-imprimir" class="btn btn-secundario" disabled>Imprimir QR</button>' +
+              '<p class="sub">Pégalo en la camioneta. El chofer lo escanea con la cámara del celular para iniciar su turno.</p>' +
+            '</div>'
+          : '') +
+      '</section>';
+
+    if (v.foto_path) mostrarFoto(v, miTurno);
+    if (puedeEditar(perfil)) {
+      activarSubidaFoto(v);
+      prepararQR(v, miTurno);
+    }
+  }
+
+  // ------------------------------------------------------------------
+  // FOTO
+  // ------------------------------------------------------------------
+  async function mostrarFoto(v, miTurno) {
+    const url = await TJE_FOTOS.enlace(v.foto_path);
+    const marco = document.getElementById('veh-foto');
+    if (miTurno !== turno || !marco) return;
+    marco.innerHTML = url
+      ? '<img alt="Foto de la camioneta ' + esc(formatoPatente(v.patente)) + '" src="' + esc(url) + '">'
+      : '<span class="sub">No se pudo cargar la foto</span>';
+  }
+
+  function activarSubidaFoto(v) {
+    const input = document.getElementById('veh-foto-input');
+    const estado = document.getElementById('veh-foto-estado');
+    input.addEventListener('change', async () => {
+      const archivo = input.files[0];
+      if (!archivo) return;
+      estado.hidden = false;
+      estado.classList.remove('texto-error');
+      estado.textContent = 'Reduciendo foto…';
+      try {
+        const blob = await TJE_FOTOS.reducir(archivo);
+        const kb = Math.round(blob.size / 1024);
+        estado.textContent = 'Subiendo foto (' + kb + ' KB)…';
+        const ruta = v.empresa_id + '/vehiculos/' + v.id + '.jpg';
+        await TJE_FOTOS.subir(ruta, blob);
+        if (v.foto_path !== ruta) {
+          const { error } = await TJE.db.from('vehiculos').update({ foto_path: ruta }).eq('id', v.id);
+          if (error) throw new Error(mensajeError(error));
+          v.foto_path = ruta;
+        }
+        // Muestra la foto reducida que ya está en el equipo (no vuelve a descargarla)
+        document.getElementById('veh-foto').innerHTML =
+          '<img alt="Foto de la camioneta" src="' + URL.createObjectURL(blob) + '">';
+        document.getElementById('veh-foto-txt').textContent = 'Cambiar foto';
+        estado.textContent = 'Foto guardada ✓ (' + kb + ' KB)';
+      } catch (e) {
+        estado.textContent = e.message;
+        estado.classList.add('texto-error');
+      } finally {
+        input.value = '';
+      }
+    });
+  }
+
+  // ------------------------------------------------------------------
+  // CÓDIGO QR: dirección web de TJE Express + código único de la camioneta
+  // ------------------------------------------------------------------
+  const direccionQR = (v) => new URL('app.html', location.href).href + '#turno/' + v.qr_codigo;
+
+  async function prepararQR(v, miTurno) {
+    const marco = document.getElementById('veh-qr');
+    try {
+      await TJE_FOTOS.cargarScript(QR_LIB); // se descarga solo al abrir una ficha (~20 KB, una vez)
+      if (miTurno !== turno) return;
+      const q = window.qrcode(0, 'M');
+      q.addData(direccionQR(v));
+      q.make();
+      const svg = q.createSvgTag(4, 16);
+      marco.innerHTML = svg;
+      const btn = document.getElementById('veh-imprimir');
+      btn.disabled = false;
+      btn.addEventListener('click', () => imprimirEtiqueta(v, svg));
+    } catch (e) {
+      if (marco) marco.innerHTML = '<span class="sub texto-error">' + esc(e.message) + '</span>';
+    }
+  }
+
+  // Etiqueta para imprimir: solo ella aparece en el papel
+  function imprimirEtiqueta(v, svg) {
+    let etiqueta = document.getElementById('etiqueta-impresion');
+    if (!etiqueta) {
+      etiqueta = document.createElement('div');
+      etiqueta.id = 'etiqueta-impresion';
+      document.body.appendChild(etiqueta);
+    }
+    etiqueta.innerHTML =
+      '<div class="etq">' +
+        '<div class="etq-logo"><b>TJE</b> EXPRESS</div>' +
+        '<div class="etq-placa">' + esc(formatoPatente(v.patente)) + '</div>' +
+        '<div class="etq-qr">' + svg + '</div>' +
+        '<p>Escanea con la cámara de tu celular para iniciar o cerrar tu turno.</p>' +
+        '<small>' + esc([v.marca, v.modelo].filter(Boolean).join(' ')) + (v.bodega ? ' · ' + esc(v.bodega.nombre) : '') + '</small>' +
+      '</div>';
+    window.print();
   }
 
   // ------------------------------------------------------------------
