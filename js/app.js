@@ -66,7 +66,6 @@
   // Qué se construirá en cada sección (según el orden acordado).
   const PROXIMAMENTE = {
     mapa: 'Todas las camionetas en un solo mapa, en tiempo real.',
-    conductores: 'Ficha de cada chofer: datos personales, laborales y foto.',
     rutas: 'Planificar rutas y asignarlas a chofer y camioneta (módulo de RutasJuan).',
     documentos: 'Licencias, SOAP, revisión técnica y sus vencimientos.',
     mantencion: 'Kilometraje, próximas mantenciones e historial de costos.',
@@ -75,8 +74,7 @@
     ajustes: 'Bodegas, usuarios y preferencias de la empresa.',
     empresas: 'Clientes de TJELabs que usan TJE Express.',
     turno: 'Aquí escanearás el QR de la camioneta para iniciar y cerrar tu turno.',
-    ruta: 'Tu ruta del día: entregas en orden y botón para marcarlas.',
-    ficha: 'Tus datos personales y laborales.'
+    ruta: 'Tu ruta del día: entregas en orden y botón para marcarlas.'
   };
 
   let perfil = null;
@@ -208,12 +206,13 @@
       return count;
     };
     try {
-      const [empresas, bodegas, vehiculos] = await Promise.all([contar('empresas'), contar('bodegas'), contar('vehiculos')]);
+      const [empresas, bodegas, vehiculos, conductores] = await Promise.all([contar('empresas'), contar('bodegas'), contar('vehiculos'), contar('conductores')]);
       $('chequeos').innerHTML =
         '<li class="ok">Sesión activa y perfil encontrado</li>' +
         '<li class="ok">Empresas visibles: <b>' + empresas + '</b></li>' +
         '<li class="ok">Bodegas visibles: <b>' + bodegas + '</b></li>' +
-        '<li class="ok">Vehículos registrados: <b>' + vehiculos + '</b></li>';
+        '<li class="ok">Vehículos registrados: <b>' + vehiculos + '</b></li>' +
+        '<li class="ok">Choferes registrados: <b>' + conductores + '</b></li>';
     } catch (e) {
       $('chequeos').innerHTML = '<li class="error">' + escapar(TJE.traducirError(e)) + '</li>';
     }

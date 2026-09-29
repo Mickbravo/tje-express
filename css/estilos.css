@@ -334,4 +334,29 @@ input:focus, select:focus { border-color: var(--azul); outline: none; box-shadow
   .etq small { font-size: 9pt; color: #333; }
 }
 
+
+/* =====================================================================
+   v0.4.0: módulo Conductores
+   ===================================================================== */
+.chofer-linea { display: flex; align-items: center; gap: 12px; }
+.avatar-chofer { width: 42px; height: 42px; font-size: 14px; border-color: var(--c, var(--borde)); }
+.ficha-seccion { max-width: 900px; width: 100%; }
+.ficha-seccion h2 { margin-bottom: 6px; }
+.chofer-cabecera { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.chofer-titulo { flex: 1; min-width: 180px; display: grid; gap: 6px; justify-items: start; }
+.chofer-titulo h1 { font-size: 22px; }
+.chofer-titulo .sub { margin: 0; }
+.chofer-acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+.avatar-grande {
+  width: 84px; height: 84px; flex: none; border-radius: 50%; overflow: hidden;
+  display: grid; place-items: center; font-size: 28px; font-weight: 700;
+  background: var(--panel-2); border: 2px solid var(--c, var(--borde));
+}
+.avatar-grande img { width: 100%; height: 100%; object-fit: cover; }
+.btn-llamar { background: var(--rojo); color: #fff; }
+.btn-llamar:hover { background: #f25c5c; }
+.enlace-tel { color: var(--azul); white-space: nowrap; }
+.enlace-tel:hover { text-decoration: underline; }
+.subtitulo-form { font-size: 15px; color: var(--texto-2); margin: 22px 0 0; font-weight: 600; }
+
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

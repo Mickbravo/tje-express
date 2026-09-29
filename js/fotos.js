@@ -79,5 +79,35 @@
     return scripts[src];
   }
 
-  window.TJE_FOTOS = { reducir, subir, enlace, cargarScript };
+  // Conecta un <input type="file"> con todo el proceso: reducir → subir →
+  // guardar la ruta en la tabla → mostrar la foto (sin volver a descargarla).
+  function activarSubida({ input, estado, ruta, tabla, id, rutaActual, alMostrar }) {
+    input.addEventListener('change', async () => {
+      const archivo = input.files[0];
+      if (!archivo) return;
+      estado.hidden = false;
+      estado.classList.remove('texto-error');
+      estado.textContent = 'Reduciendo foto…';
+      try {
+        const blob = await reducir(archivo);
+        const kb = Math.round(blob.size / 1024);
+        estado.textContent = 'Subiendo foto (' + kb + ' KB)…';
+        await subir(ruta, blob);
+        if (rutaActual !== ruta) {
+          const { error } = await TJE.db.from(tabla).update({ foto_path: ruta }).eq('id', id);
+          if (error) throw new Error(TJE.traducirError(error));
+          rutaActual = ruta;
+        }
+        alMostrar(URL.createObjectURL(blob));
+        estado.textContent = 'Foto guardada ✓ (' + kb + ' KB)';
+      } catch (e) {
+        estado.textContent = e.message;
+        estado.classList.add('texto-error');
+      } finally {
+        input.value = '';
+      }
+    });
+  }
+
+  window.TJE_FOTOS = { reducir, subir, enlace, cargarScript, activarSubida };
 })();

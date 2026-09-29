@@ -18,9 +18,11 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 | `js/app.js` | Menú, navegación y secciones |
 | `js/fotos.js` | Reducir, subir y mostrar fotos; cargar librerías solo cuando se usan |
 | `js/vehiculos.js` | Módulo Vehículos: lista, ficha, agregar y editar |
+| `js/conductores.js` | Módulo Conductores: lista, ficha con foto, agregar y editar; "Mi ficha" del chofer |
 
 ## Versiones
 
+- **v0.4.0** · Módulo Conductores: lista por bodega, ficha con foto, edad y antigüedad calculadas, validación de RUT, botón llamar, "Mi ficha" para el chofer.
 - **v0.3.1** · Tarjetas y ficha con el borde completo del color de la bodega; "Cerrar sesión" solo en el equipo actual; etiqueta QR sin encabezado ni pie de Chrome.
 - **v0.3.0** · Foto de cada camioneta (reducida a ~200 KB), código QR imprimible, búsqueda sin importar tildes y ficha más cómoda en pantallas grandes.
 - **v0.2.0** · Módulo Vehículos: lista por bodega, ficha, agregar y editar (oficina y admin).
