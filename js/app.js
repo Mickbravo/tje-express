@@ -27,16 +27,9 @@
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
     (ICONOS[n] || '') + '</svg>';
 
-  // Iniciales y primer nombre ignorando símbolos: "[PRUEBA] Oficina" → "PO"
-  const soloLetras = (t) => String(t || '').replace(/[^\p{L}\s]/gu, ' ').split(/\s+/).filter(Boolean);
-  const iniciales = (t) => soloLetras(t).slice(0, 2).map((p) => p[0].toUpperCase()).join('') || '?';
-  const primerNombre = (t) => soloLetras(t)[0] || '';
-
-  const escapar = (t) =>
-    String(t ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-
-  // Utilidades compartidas con los módulos (vehiculos.js, etc.)
-  window.TJE_UI = { icono, escapar };
+  // Utilidades compartidas (js/ui.js); los íconos se suman a ellas
+  const { escapar, iniciales, primerNombre } = window.TJE_UI;
+  window.TJE_UI.icono = icono;
 
   // ---------- Menús por rol ----------
   // "barra: true" = aparece en la barra inferior del celular.

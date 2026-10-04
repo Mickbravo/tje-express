@@ -21,15 +21,11 @@
   let turno = 0;
   let avisoPendiente = '';
 
-  const esc = (t) => window.TJE_UI.escapar(t);
-  const normalizar = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const puedeEditar = (perfil) => perfil.rol === 'admin' || perfil.rol === 'oficina';
-  const colorBodega = (b) => (b && /^#[0-9a-f]{3,8}$/i.test(b.color) ? b.color : '#8fa4be');
-  const pillEstado = (e) => '<span class="pill pill-' + (e === 'activo' ? 'operativo' : 'fuera_de_servicio') + '">' + esc(ESTADOS[e] || e) + '</span>';
-  const iniciales = (t) => String(t || '').replace(/[^\p{L}\s]/gu, ' ').split(/\s+/).filter(Boolean)
-    .slice(0, 2).map((p) => p[0].toUpperCase()).join('') || '?';
+  // Utilidades compartidas (js/ui.js)
+  const { escapar: esc, normalizar, puedeEditar, colorBodega, iniciales, formatoPatente, fila, pill } = window.TJE_UI;
+  const pillEstado = (e) => pill(e === 'activo' ? 'operativo' : 'fuera_de_servicio', ESTADOS[e] || e);
   const patentes = (c) => (Array.isArray(c.vehiculos) ? c.vehiculos : c.vehiculos ? [c.vehiculos] : [])
-    .map((v) => { const s = String(v.patente || ''); return s.length === 6 ? s.slice(0, 2) + '-' + s.slice(2, 4) + '-' + s.slice(4) : s; });
+    .map((v) => formatoPatente(v.patente));
 
   // ---------- RUT chileno ----------
   const limpiarRut = (r) => String(r || '').toUpperCase().replace(/[^0-9K]/g, '');
@@ -184,7 +180,6 @@
     const editar = puedeEditar(perfil) && !esMiFicha;
     const aviso = avisoPendiente;
     avisoPendiente = '';
-    const fila = (k, v) => '<div><dt>' + esc(k) + '</dt><dd>' + v + '</dd></div>';
     const telLlamar = c.telefono_empresa || c.telefono_personal;
     const pats = patentes(c);
     const tieneAcceso = Array.isArray(c.acceso) ? c.acceso.length > 0 : !!c.acceso;

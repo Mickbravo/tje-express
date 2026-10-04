@@ -23,18 +23,9 @@
   let avisoPendiente = '';  // mensaje "Guardado ✓" para mostrar en la ficha
 
   const QR_LIB = 'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js';
-  const esc = (t) => window.TJE_UI.escapar(t);
-  // "Citroën" y "citroen" cuentan como lo mismo al buscar
-  const normalizar = (t) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
-  const numero = (n) => (n == null || n === '' ? '—' : Number(n).toLocaleString('es-CL'));
-  const limpiarPatente = (p) => String(p || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
-  const formatoPatente = (p) => {
-    const s = limpiarPatente(p);
-    return s.length === 6 ? s.slice(0, 2) + '-' + s.slice(2, 4) + '-' + s.slice(4) : s;
-  };
-  const puedeEditar = (perfil) => perfil.rol === 'admin' || perfil.rol === 'oficina';
-  const pillEstado = (e) => '<span class="pill pill-' + esc(e) + '">' + esc(ESTADOS[e] || e) + '</span>';
-  const colorBodega = (b) => (b && /^#[0-9a-f]{3,8}$/i.test(b.color) ? b.color : '#8fa4be');
+  // Utilidades compartidas (js/ui.js)
+  const { escapar: esc, normalizar, numero, limpiarPatente, formatoPatente, puedeEditar, colorBodega, fila, pill } = window.TJE_UI;
+  const pillEstado = (e) => pill(e, ESTADOS[e] || e);
 
   function mensajeError(e) {
     if (e && e.code === '23505') return 'Ya existe un vehículo con esa patente.';
@@ -109,7 +100,7 @@
         '<div class="placa">' + esc(formatoPatente(v.patente)) + '</div>' +
         '<div class="tarjeta-modelo">' + esc([v.marca, v.modelo].filter(Boolean).join(' ') || v.tipo || '—') + '</div>' +
         '<div class="tarjeta-fila sub">' +
-          '<span>' + numero(v.km_actual) + ' km</span>' +
+          '<span>' + esc(numero(v.km_actual) + ' km') + '</span>' +
           '<span>' + esc(v.conductor ? v.conductor.nombre : 'Sin chofer asignado') + '</span>' +
         '</div>' +
       '</a>';
@@ -134,7 +125,6 @@
 
     const aviso = avisoPendiente;
     avisoPendiente = '';
-    const fila = (k, val) => '<div><dt>' + esc(k) + '</dt><dd>' + val + '</dd></div>';
 
     cont.innerHTML =
       (aviso ? '<p class="aviso aviso-ok">' + esc(aviso) + '</p>' : '') +
@@ -153,7 +143,7 @@
           fila('Marca', esc(v.marca || '—')) +
           fila('Modelo', esc(v.modelo || '—')) +
           fila('Año', esc(v.anio || '—')) +
-          fila('Kilometraje actual', numero(v.km_actual) + ' km') +
+          fila('Kilometraje actual', esc(numero(v.km_actual) + ' km')) +
           fila('Bodega asignada', v.bodega ? '<span class="bodega-etq">' + esc(v.bodega.nombre) + '</span>' : '—') +
           fila('Chofer asignado', esc(v.conductor ? v.conductor.nombre : 'Sin chofer asignado')) +
           fila('GPS', esc(v.gps_imei ? 'IMEI ' + v.gps_imei : 'Sin GPS instalado')) +
