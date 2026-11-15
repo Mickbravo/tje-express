@@ -20,9 +20,11 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 | `js/fotos.js` | Reducir, subir y mostrar fotos; cargar librerías solo cuando se usan |
 | `js/vehiculos.js` | Módulo Vehículos: lista, ficha, agregar y editar |
 | `js/conductores.js` | Módulo Conductores: lista, ficha con foto, agregar y editar; "Mi ficha" del chofer |
+| `js/turno.js` | Módulo "Mi turno" del chofer: escanear el QR de la camioneta, iniciar y cerrar el turno |
 
 ## Versiones
 
+- **v0.5.0** · Módulo "Mi turno" (chofer): el QR de la camioneta abre el turno; muestra patente, foto y tiempo en turno; botón cerrar. La hora la pone la base de datos (SQL 06). Sin kilómetros: llegarán desde el GPS.
 - **v0.4.1** · Cache busting (`?v=` en cada archivo: los celulares bajan la versión nueva solos y, sin cambios, usan la copia guardada); nuevo `js/ui.js` con funciones compartidas; escape reforzado; Supabase fijo en 2.117.2.
 - **v0.4.0** · Módulo Conductores: lista por bodega, ficha con foto, edad y antigüedad calculadas, validación de RUT, botón llamar, "Mi ficha" para el chofer.
 - **v0.3.1** · Tarjetas y ficha con el borde completo del color de la bodega; "Cerrar sesión" solo en el equipo actual; etiqueta QR sin encabezado ni pie de Chrome.
