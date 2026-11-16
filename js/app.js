@@ -38,6 +38,7 @@
     { id: 'mapa', txt: 'Mapa general', ic: 'mapa' },
     { id: 'conductores', txt: 'Conductores', ic: 'conductor', barra: true },
     { id: 'vehiculos', txt: 'Vehículos', ic: 'vehiculo', barra: true },
+    { id: 'turnos', txt: 'Turnos', ic: 'qr' },
     { id: 'rutas', txt: 'Rutas', ic: 'ruta' },
     { id: 'documentos', txt: 'Documentos', ic: 'documento' },
     { id: 'mantencion', txt: 'Mantención', ic: 'llave' },
