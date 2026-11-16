@@ -25,6 +25,7 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 
 ## Versiones
 
+- **v0.6.1** · "Mi turno" se vuelve a consultar sola cuando el chofer regresa a la app (por si la oficina cerró su turno); aviso claro si el turno ya estaba cerrado.
 - **v0.6.0** · Módulo "Turnos" (oficina y admin): camionetas en turno ahora, historial de los últimos 7 días y botón para cerrar un turno olvidado.
 - **v0.5.0** · Módulo "Mi turno" (chofer): el QR de la camioneta abre el turno; muestra patente, foto y tiempo en turno; botón cerrar. La hora la pone la base de datos (SQL 06). Sin kilómetros: llegarán desde el GPS.
 - **v0.4.1** · Cache busting (`?v=` en cada archivo: los celulares bajan la versión nueva solos y, sin cambios, usan la copia guardada); nuevo `js/ui.js` con funciones compartidas; escape reforzado; Supabase fijo en 2.117.2.

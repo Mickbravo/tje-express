@@ -11,6 +11,11 @@
 (function () {
   let turno = 0; // evita que una carga lenta pinte sobre otra pantalla (no confundir con el turno del chofer)
 
+  // Para volver a consultar cuando el chofer regresa a la app (ver "refrescar")
+  let ultimo = null;        // { cont, perfil } de la última vez que se pintó
+  let mostrandoAbierto = false; // true solo mientras se ve la pantalla "Turno abierto"
+  let ultimaConsulta = 0;   // hora de la última consulta a la base
+
   const { escapar: esc, formatoPatente, colorBodega, fila } = window.TJE_UI;
 
   // Solo las columnas que se muestran (ahorro de datos).
@@ -37,6 +42,8 @@
   async function pintar(cont, perfil, partes) {
     const miTurno = ++turno;
     const codigo = partes[0] || '';
+    ultimo = { cont, perfil };
+    mostrandoAbierto = false;
     if (!perfil.conductor_id) {
       cont.innerHTML = '<p class="aviso aviso-error">Tu usuario no tiene una ficha de chofer enlazada. Avisa a la oficina.</p>';
       return;
@@ -49,6 +56,7 @@
       .select('id, inicio, vehiculo:vehiculos!turnos_vehiculo_id_fkey(' + COLUMNAS_VEH + ')')
       .is('fin', null)
       .maybeSingle();
+    ultimaConsulta = Date.now();
     if (miTurno !== turno) return;
     if (error) return mostrarError(cont, error);
 
@@ -191,6 +199,7 @@
   // ------------------------------------------------------------------
   function pantallaAbierto(cont, perfil, t, codigo) {
     const v = t.vehiculo || {};
+    mostrandoAbierto = true;
     const otraCamioneta = codigo && v.id && codigo !== v.qr_codigo;
     cont.innerHTML =
       (otraCamioneta ? '<p class="aviso aviso-error">Ya tienes un turno abierto en otra camioneta. Ciérralo antes de iniciar uno nuevo.</p>' : '') +
@@ -217,7 +226,15 @@
       estado.textContent = 'Cerrando turno…';
       // La hora de término también la pone la base (ver SQL 06).
       const { error } = await TJE.db.from('turnos').update({ fin: new Date().toISOString() }).eq('id', t.id);
+      mostrandoAbierto = false;
       if (error) {
+        // La oficina ya lo había cerrado: no es un error, solo se avisa.
+        if (String(error.message || '').includes('ya está cerrado')) {
+          cont.innerHTML = '<p class="aviso aviso-ok">La oficina ya había cerrado este turno ✓</p>' +
+            '<a class="btn btn-secundario" href="#ficha">Ir a Mi ficha</a>';
+          return;
+        }
+        mostrandoAbierto = true;
         btn.disabled = false;
         estado.textContent = mensajeError(error);
         estado.classList.add('texto-error');
@@ -228,6 +245,22 @@
       if (location.hash !== '#turno') history.replaceState(null, '', '#turno');
     });
   }
+
+  // ------------------------------------------------------------------
+  // Refrescar: cuando el chofer vuelve a la app (desbloquea el celular o
+  // regresa a la pestaña) y está viendo "Turno abierto", se consulta de
+  // nuevo por si la oficina lo cerró. Una consulta chica, y como máximo
+  // una cada 30 segundos (ahorro de datos).
+  // ------------------------------------------------------------------
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return;
+    if (!mostrandoAbierto || !ultimo) return;
+    if (!/^#turno(\/|$)/.test(location.hash)) return;
+    if (Date.now() - ultimaConsulta < 30000) return;
+    const btn = document.getElementById('tur-cerrar');
+    if (btn && btn.disabled) return; // está cerrando en este momento
+    pintar(ultimo.cont, ultimo.perfil, []);
+  });
 
   window.TJE_MODULOS = window.TJE_MODULOS || {};
   window.TJE_MODULOS.turno = { pintar };
