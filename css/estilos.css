@@ -359,4 +359,44 @@ input:focus, select:focus { border-color: var(--azul); outline: none; box-shadow
 .enlace-tel:hover { text-decoration: underline; }
 .subtitulo-form { font-size: 15px; color: var(--texto-2); margin: 22px 0 0; font-weight: 600; }
 
+
+/* =====================================================================
+   v0.7.0: módulo Documentos (semáforo de vencimientos)
+   ===================================================================== */
+.doc-cuerpo { display: grid; gap: 16px; }
+.doc-contadores { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.doc-contador {
+  display: grid; gap: 2px; padding: 12px 14px; border-radius: var(--radio);
+  background: var(--panel); border: 1px solid var(--borde); border-left: 4px solid var(--d, var(--borde));
+}
+.doc-contador b { font-size: 26px; line-height: 1.1; }
+.doc-contador span { font-size: 13px; color: var(--texto-2); }
+.doc-vencido { --d: var(--rojo); }
+.doc-por_vencer { --d: #f5c518; }
+.doc-al_dia, .doc-registrado { --d: var(--verde); }
+.doc-falta, .doc-opcional { --d: #8fa4be; }
+.pill-doc-vencido { background: rgba(239,68,68,.15); color: #fca5a5; }
+.pill-doc-por_vencer { background: rgba(245,197,24,.15); color: #f5d24b; }
+.pill-doc-al_dia, .pill-doc-registrado { background: rgba(46,204,113,.15); color: #6ee7a0; }
+.pill-doc-falta, .pill-doc-opcional { background: rgba(143,164,190,.15); color: #b6c6da; }
+.doc-mini { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 4px; font-size: 13px; color: var(--texto-2); }
+.doc-mini li { display: flex; align-items: center; gap: 8px; }
+.doc-mini small { margin-left: auto; font-size: 12px; white-space: nowrap; }
+.doc-punto { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--d, var(--borde)); }
+.doc-lista { display: grid; }
+.doc-fila { display: grid; gap: 6px; padding: 14px 0; border-bottom: 1px solid var(--borde); }
+.doc-fila:last-child { border-bottom: 0; padding-bottom: 0; }
+.doc-fila-titulo { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.doc-fila .sub { margin: 0; }
+.doc-fila .sub b { color: var(--texto); }
+.doc-fila-acciones { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.btn-chico { min-height: 38px; padding: 0 14px; font-size: 14px; }
+.btn-peligro { color: #fca5a5; border-color: rgba(239,68,68,.4); margin-right: auto; }
+.aviso-atencion { background: rgba(245,197,24,.12); border: 1px solid rgba(245,197,24,.4); color: #f5d24b; }
+input[type="file"] { height: auto; padding: 10px 14px; }
+.formulario .acciones { flex-wrap: wrap; }
+@media (min-width: 700px) {
+  .doc-contadores { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
