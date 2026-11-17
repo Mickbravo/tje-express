@@ -435,5 +435,6 @@
   }
 
   window.TJE_MODULOS = window.TJE_MODULOS || {};
-  window.TJE_MODULOS.documentos = { pintar };
+  // "armar" y "cuandoVence" también los usa el tablero de Inicio (js/inicio.js)
+  window.TJE_MODULOS.documentos = { pintar, armar, cuandoVence };
 })();

@@ -1,7 +1,7 @@
 // =====================================================================
 // TJE EXPRESS · app.js
 // Arma la app según el rol: menú, barra superior y secciones.
-// Por ahora cada sección es un espacio "en construcción".
+// Cada sección es un módulo (js/*.js); las que faltan muestran "en construcción".
 // =====================================================================
 (async function () {
   const $ = (id) => document.getElementById(id);
@@ -28,7 +28,7 @@
     (ICONOS[n] || '') + '</svg>';
 
   // Utilidades compartidas (js/ui.js); los íconos se suman a ellas
-  const { escapar, iniciales, primerNombre } = window.TJE_UI;
+  const { escapar, iniciales } = window.TJE_UI;
   window.TJE_UI.icono = icono;
 
   // ---------- Menús por rol ----------
@@ -156,7 +156,6 @@
 
     window.scrollTo(0, 0);
     $('contenido').scrollTop = 0;
-    if (item.id === 'inicio') return pintarInicio();
     const modulo = (window.TJE_MODULOS || {})[item.id];
     if (modulo) return modulo.pintar($('contenido'), perfil, item.id === id ? resto : []);
     pintarProximamente(item);
@@ -170,46 +169,6 @@
         '<p>' + escapar(PROXIMAMENTE[item.id] || 'Sección en preparación.') + '</p>' +
         '<span class="etiqueta">En construcción</span>' +
       '</section>';
-  }
-
-  // Inicio: saludo + prueba de conexión (cuenta bodegas y empresas que
-  // el usuario puede ver; así comprobamos que las reglas RLS funcionan).
-  async function pintarInicio() {
-    const empresa = perfil.rol === 'admin'
-      ? 'TJELabs (acceso a todas las empresas)'
-      : (perfil.empresas && perfil.empresas.nombre) || '—';
-
-    $('contenido').innerHTML =
-      '<section class="panel bienvenida">' +
-        '<h1>Hola, ' + escapar(primerNombre(perfil.nombre)) + '</h1>' +
-        '<dl class="datos">' +
-          '<div><dt>Empresa</dt><dd>' + escapar(empresa) + '</dd></div>' +
-          '<div><dt>Rol</dt><dd>' + escapar(TJE.ROLES[perfil.rol]) + '</dd></div>' +
-          '<div><dt>Correo</dt><dd>' + escapar(perfil.correo) + '</dd></div>' +
-        '</dl>' +
-      '</section>' +
-      '<section class="panel">' +
-        '<h2>Conexión con la base de datos</h2>' +
-        '<ul class="chequeos" id="chequeos"><li>Comprobando…</li></ul>' +
-      '</section>';
-
-    // "head: true" trae solo la cantidad, no las filas: casi no gasta datos.
-    const contar = async (tabla) => {
-      const { count, error } = await TJE.db.from(tabla).select('id', { count: 'exact', head: true });
-      if (error) throw error;
-      return count;
-    };
-    try {
-      const [empresas, bodegas, vehiculos, conductores] = await Promise.all([contar('empresas'), contar('bodegas'), contar('vehiculos'), contar('conductores')]);
-      $('chequeos').innerHTML =
-        '<li class="ok">Sesión activa y perfil encontrado</li>' +
-        '<li class="ok">Empresas visibles: <b>' + empresas + '</b></li>' +
-        '<li class="ok">Bodegas visibles: <b>' + bodegas + '</b></li>' +
-        '<li class="ok">Vehículos registrados: <b>' + vehiculos + '</b></li>' +
-        '<li class="ok">Choferes registrados: <b>' + conductores + '</b></li>';
-    } catch (e) {
-      $('chequeos').innerHTML = '<li class="error">' + escapar(TJE.traducirError(e)) + '</li>';
-    }
   }
 
   $('btn-reintentar').addEventListener('click', arrancar);

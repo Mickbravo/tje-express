@@ -399,4 +399,17 @@ input[type="file"] { height: auto; padding: 10px 14px; }
   .doc-contadores { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 }
 
+/* v0.8.0: tablero de Inicio */
+a.doc-contador:hover { background: var(--panel-2); }
+.ini-lista { display: grid; }
+.ini-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--borde); }
+.ini-item:last-child { border-bottom: 0; padding-bottom: 0; }
+.ini-item:first-child { padding-top: 0; }
+.ini-item:hover strong { text-decoration: underline; }
+.ini-texto { display: grid; gap: 2px; min-width: 0; flex: 1; }
+.ini-texto small { color: var(--texto-2); font-size: 13px; }
+.ini-flecha { color: var(--texto-2); font-size: 22px; line-height: 1; }
+.ini-item .placa { font-size: 14px; flex: none; }
+.ini-item .doc-punto { width: 11px; height: 11px; }
+
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }

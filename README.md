@@ -23,9 +23,11 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 | `js/turno.js` | Módulo "Mi turno" del chofer: escanear el QR de la camioneta, iniciar y cerrar el turno |
 | `js/turnos.js` | Módulo "Turnos" de la oficina: quién tiene qué camioneta ahora, historial de 7 días y cerrar un turno olvidado |
 | `js/documentos.js` | Módulo Documentos: papeles de cada camioneta y chofer con vencimiento, semáforo y archivo adjunto; "Mis documentos" del chofer |
+| `js/inicio.js` | Tablero de Inicio (oficina y admin): camionetas operativas, turnos abiertos, documentos vencidos y por vencer, y la lista "Requiere atención" |
 
 ## Versiones
 
+- **v0.8.0** · Inicio pasa a ser un tablero: 4 indicadores, lista "Requiere atención" (documentos vencidos y por vencer, turnos abiertos más de 12 horas, camionetas detenidas, documentos sin registrar) y camionetas en turno ahora.
 - **v0.7.0** · Módulo Documentos (oficina y admin): permiso de circulación, revisión técnica, emisión de gases, SOAP, seguro y padrón por camioneta; licencia por chofer. Semáforo con el peor documento, aviso 30 días antes del vencimiento, foto (reducida) o PDF adjunto. "Mis documentos" para el chofer (solo lectura).
 - **v0.6.1** · "Mi turno" se vuelve a consultar sola cuando el chofer regresa a la app (por si la oficina cerró su turno); aviso claro si el turno ya estaba cerrado.
 - **v0.6.0** · Módulo "Turnos" (oficina y admin): camionetas en turno ahora, historial de los últimos 7 días y botón para cerrar un turno olvidado.
