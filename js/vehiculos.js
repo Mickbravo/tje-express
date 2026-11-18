@@ -136,7 +136,12 @@
             '<h1>' + esc([v.marca, v.modelo].filter(Boolean).join(' ') || v.tipo || 'Vehículo') + '</h1>' +
             pillEstado(v.estado) +
           '</div>' +
-          (puedeEditar(perfil) ? '<a class="btn btn-secundario" href="#vehiculos/' + esc(v.id) + '/editar">Editar</a>' : '') +
+          (puedeEditar(perfil)
+            ? '<div class="barra-acciones">' +
+                '<a class="btn btn-secundario" href="#documentos/v/' + esc(v.id) + '">Documentos</a>' +
+                '<a class="btn btn-secundario" href="#vehiculos/' + esc(v.id) + '/editar">Editar</a>' +
+              '</div>'
+            : '') +
         '</div>' +
         '<dl class="lista-datos">' +
           fila('Tipo de vehículo', esc(v.tipo || '—')) +
