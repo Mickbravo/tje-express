@@ -142,6 +142,8 @@
   // La dirección puede traer sub-rutas: "vehiculos/<id>/editar"
   function irA(ruta) {
     const [id, ...resto] = String(ruta || '').split('/');
+    // Admin u oficina que escanea el QR de una camioneta: va a la ficha (el chofer sigue a "Mi turno")
+    if (id === 'turno' && resto[0] && perfil.rol !== 'chofer') return abrirFichaPorQR(resto[0]);
     const item = menu.find((m) => m.id === id) || menu[0];
     if (!item) return;
     document.querySelectorAll('.menu-item[data-id]').forEach((a) => {
@@ -159,6 +161,20 @@
     const modulo = (window.TJE_MODULOS || {})[item.id];
     if (modulo) return modulo.pintar($('contenido'), perfil, item.id === id ? resto : []);
     pintarProximamente(item);
+  }
+
+  // Busca la camioneta por el código del QR y abre su ficha (una consulta chica).
+  async function abrirFichaPorQR(codigo) {
+    $('contenido').innerHTML = '<p class="sub">Buscando camioneta…</p>';
+    const { data, error } = await TJE.db.from('vehiculos').select('id').eq('qr_codigo', codigo).maybeSingle();
+    if (data) {
+      // Reemplaza la dirección del QR para que "Atrás" no vuelva a repetir la búsqueda
+      history.replaceState(null, '', '#vehiculos/' + data.id);
+      return irA('vehiculos/' + data.id);
+    }
+    $('contenido').innerHTML =
+      '<p class="aviso aviso-error">' + escapar(error ? TJE.traducirError(error) : 'Este código QR no corresponde a ninguna camioneta de tu empresa.') + '</p>' +
+      '<a class="btn btn-secundario" href="#vehiculos">← Ir a Vehículos</a>';
   }
 
   function pintarProximamente(item) {
