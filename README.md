@@ -27,6 +27,7 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 
 ## Versiones
 
+- **v0.8.1** · Escanear el QR de una camioneta con sesión de admin u oficina abre la ficha de la camioneta (el chofer sigue yendo a "Mi turno"); botón "Documentos" en la ficha de la camioneta; la hora de cierre de un turno la pone siempre la base de datos, también cuando cierra la oficina (SQL 07).
 - **v0.8.0** · Inicio pasa a ser un tablero: 4 indicadores, lista "Requiere atención" (documentos vencidos y por vencer, turnos abiertos más de 12 horas, camionetas detenidas, documentos sin registrar) y camionetas en turno ahora.
 - **v0.7.0** · Módulo Documentos (oficina y admin): permiso de circulación, revisión técnica, emisión de gases, SOAP, seguro y padrón por camioneta; licencia por chofer. Semáforo con el peor documento, aviso 30 días antes del vencimiento, foto (reducida) o PDF adjunto. "Mis documentos" para el chofer (solo lectura).
 - **v0.6.1** · "Mi turno" se vuelve a consultar sola cuando el chofer regresa a la app (por si la oficina cerró su turno); aviso claro si el turno ya estaba cerrado.
