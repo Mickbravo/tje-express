@@ -6,7 +6,9 @@
 // Un turno = "este chofer, en esta camioneta, desde esta hora".
 // La hora la pone la base de datos (no el celular), así no se puede
 // adelantar ni atrasar.
-// Los kilómetros NO se piden: llegarán desde el GPS.
+// v0.9.1: al iniciar y al cerrar se pide la FOTO DEL TABLERO y el km que
+// marca (la oficina los verifica en Gastos > Tablero). Si el chofer no
+// puede tomar la foto, escribe el motivo y el turno sigue igual.
 // =====================================================================
 (function () {
   let turno = 0; // evita que una carga lenta pinte sobre otra pantalla (no confundir con el turno del chofer)
@@ -34,6 +36,149 @@
     if (e && e.code === '23505' && m.includes('vehiculo')) return 'Esta camioneta ya tiene un turno abierto con otro chofer. Avisa a la oficina.';
     if (e && e.code === '23505') return 'Ya tienes un turno abierto. Ciérralo antes de iniciar otro.';
     return window.TJE.traducirError(e);
+  }
+
+
+  // ------------------------------------------------------------------
+  // Foto del tablero (v0.9.1): km + foto al iniciar y al cerrar el turno
+  // ------------------------------------------------------------------
+  const pendientes = []; // lecturas que no alcanzaron a guardarse (se reintentan)
+
+  function bloqueTablero(momento) {
+    return '<div class="tablero-bloque">' +
+      '<p class="tb-titulo"><b>Tablero al ' + (momento === 'inicio' ? 'iniciar' : 'cerrar') + '</b></p>' +
+      '<div class="campo"><label for="tb-km">Kilómetros que marca el tablero *</label>' +
+        '<input id="tb-km" inputmode="numeric" autocomplete="off" placeholder="Ej: 45230"></div>' +
+      '<div id="tb-con-foto">' +
+        '<label class="btn btn-secundario tb-boton" for="tb-archivo">Tomar foto del tablero</label>' +
+        '<input id="tb-archivo" type="file" accept="image/*" capture="environment" hidden>' +
+        '<div id="tb-vista" class="tb-vista" hidden></div>' +
+      '</div>' +
+      '<div id="tb-sin-foto" hidden><div class="campo"><label for="tb-motivo">¿Por qué no pudiste tomar la foto? *</label>' +
+        '<input id="tb-motivo" maxlength="200" autocomplete="off" placeholder="Ej: la cámara no funciona"></div></div>' +
+      '<button type="button" class="btn-enlace" id="tb-alternar">No pude tomar la foto</button>' +
+      '<p id="tb-mensaje" class="aviso aviso-error" role="alert" hidden></p>' +
+    '</div>';
+  }
+
+  // Conecta el bloque: reduce la foto apenas se toma y valida lo escrito.
+  function activarTablero() {
+    const $ = (x) => document.getElementById(x);
+    const est = { blob: null, id: crypto.randomUUID(), sinFoto: false };
+    const mostrar = (txt) => { const m = $('tb-mensaje'); m.textContent = txt || ''; m.hidden = !txt; };
+
+    $('tb-archivo').addEventListener('change', async (ev) => {
+      const archivo = ev.target.files[0];
+      if (!archivo) return;
+      mostrar('');
+      const vista = $('tb-vista');
+      vista.hidden = false;
+      vista.textContent = 'Preparando foto…';
+      try {
+        est.blob = await TJE_FOTOS.reducir(archivo);
+        est.id = crypto.randomUUID(); // foto nueva = ruta nueva (evita choques al reintentar)
+        vista.innerHTML = '<img alt="Foto del tablero" src="' + URL.createObjectURL(est.blob) + '">' +
+          '<p class="sub">Foto lista (' + Math.round(est.blob.size / 1024) + ' KB)</p>';
+      } catch (e) {
+        est.blob = null;
+        vista.hidden = true;
+        mostrar(e.message);
+      } finally {
+        ev.target.value = '';
+      }
+    });
+
+    $('tb-alternar').addEventListener('click', () => {
+      est.sinFoto = !est.sinFoto;
+      $('tb-con-foto').hidden = est.sinFoto;
+      $('tb-sin-foto').hidden = !est.sinFoto;
+      $('tb-alternar').textContent = est.sinFoto ? 'Sí puedo tomar la foto' : 'No pude tomar la foto';
+      mostrar('');
+    });
+
+    return {
+      validar() {
+        const txt = $('tb-km').value.replace(/[.\s]/g, '');
+        if (!/^\d{1,7}$/.test(txt) || Number(txt) >= 3000000) {
+          mostrar('Escribe los kilómetros que marca el tablero, solo números.');
+          $('tb-km').focus();
+          return null;
+        }
+        let motivo = null;
+        if (est.sinFoto) {
+          motivo = $('tb-motivo').value.trim();
+          if (!motivo) { mostrar('Cuéntanos por qué no pudiste tomar la foto.'); $('tb-motivo').focus(); return null; }
+        } else if (!est.blob) {
+          mostrar('Toma la foto del tablero. Si no puedes, toca "No pude tomar la foto".');
+          return null;
+        }
+        mostrar('');
+        return { km: Number(txt), blob: est.sinFoto ? null : est.blob, motivo, id: est.id };
+      }
+    };
+  }
+
+  // Sube la foto al bucket privado "tablero". Si ya estaba subida (un
+  // reintento), no es error.
+  async function subirTablero(ruta, blob) {
+    const { error } = await TJE.db.storage.from('tablero')
+      .upload(ruta, blob, { upsert: false, contentType: 'image/jpeg', cacheControl: '3600' });
+    if (error && !/already exists|duplicate/i.test(String(error.message || '')) && String(error.statusCode) !== '409') throw error;
+  }
+
+  const rutaTablero = (perfil, v, datos) => perfil.empresa_id + '/' + v.id + '/' + datos.id + '.jpg';
+
+  function filaLectura(perfil, turnoId, v, momento, datos) {
+    const sin = !datos.blob;
+    return {
+      id: datos.id,
+      empresa_id: perfil.empresa_id,
+      vehiculo_id: v.id,
+      turno_id: turnoId,
+      chofer_id: perfil.conductor_id,
+      momento,
+      km_anotado: datos.km,
+      foto_path: sin ? null : rutaTablero(perfil, v, datos),
+      sin_foto: sin,
+      motivo_sin_foto: sin ? datos.motivo : null,
+      hora_celular: new Date().toISOString() // la hora oficial la pone la base
+    };
+  }
+
+  // 23505 = ya estaba guardada (reintento): no es error.
+  async function guardarLectura(fila) {
+    const { error } = await TJE.db.from('lecturas_tablero').insert(fila);
+    if (error && error.code !== '23505') throw error;
+  }
+
+  async function guardarVarias(filas) {
+    const fallan = [];
+    for (const f of filas) {
+      try { await guardarLectura(f); } catch (e) { fallan.push(f); }
+    }
+    return fallan;
+  }
+
+  // Si el chofer tiene el km escrito o una foto lista, no se refresca la pantalla
+  function tableroConDatos() {
+    const km = document.getElementById('tb-km');
+    const vista = document.getElementById('tb-vista');
+    return !!((km && km.value) || (vista && !vista.hidden));
+  }
+
+  // Pantalla final de "Turno cerrado": guarda la lectura y deja reintentar
+  async function pantallaCerrado(cont, textoOk, filas) {
+    const volver = '<a class="btn btn-secundario" href="#ficha">Ir a Mi ficha</a>';
+    cont.innerHTML = '<p class="aviso aviso-ok">' + textoOk + '</p><p class="sub">Guardando los datos del tablero…</p>';
+    const fallan = await guardarVarias(filas);
+    if (!fallan.length) {
+      cont.innerHTML = '<p class="aviso aviso-ok">' + textoOk + '</p><p class="sub">Datos del tablero guardados ✓</p>' + volver;
+      return;
+    }
+    cont.innerHTML = '<p class="aviso aviso-ok">' + textoOk + '</p>' +
+      '<p class="aviso aviso-error">No se pudo guardar el km del tablero. Revisa tu señal e intenta otra vez.</p>' +
+      '<button type="button" class="btn btn-primario" id="tur-reintentar-lectura">Reintentar</button> ' + volver;
+    document.getElementById('tur-reintentar-lectura').addEventListener('click', () => pantallaCerrado(cont, textoOk, fallan));
   }
 
   // ------------------------------------------------------------------
@@ -164,6 +309,7 @@
       tarjetaCamioneta(v) +
       (noOperativa ? '<p class="aviso aviso-error">Ojo: esta camioneta figura como <b>' + esc(v.estado === 'en_mantencion' ? 'en mantención' : 'fuera de servicio') + '</b>. Confirma con la oficina antes de salir.</p>' : '') +
       '<section class="panel">' +
+        bloqueTablero('inicio') +
         '<p>¿Inicias tu turno en esta camioneta ahora?</p>' +
         '<button type="button" class="btn btn-primario" id="tur-iniciar">Iniciar turno</button> ' +
         '<a class="btn btn-secundario" href="#turno">Cancelar</a>' +
@@ -171,25 +317,44 @@
       '</section>';
     mostrarFoto(v, miTurno);
 
+    const tablero = activarTablero();
     document.getElementById('tur-iniciar').addEventListener('click', async (ev) => {
+      const datos = tablero.validar();
+      if (!datos) return;
       const btn = ev.currentTarget;
       const estado = document.getElementById('tur-estado');
       btn.disabled = true;
       estado.hidden = false;
       estado.classList.remove('texto-error');
+      // 1) La foto primero: si falla, el turno todavía no se abrió y se puede reintentar.
+      if (datos.blob) {
+        estado.textContent = 'Subiendo foto…';
+        try {
+          await subirTablero(rutaTablero(perfil, v, datos), datos.blob);
+        } catch (e) {
+          btn.disabled = false;
+          estado.textContent = 'No se pudo subir la foto. ' + mensajeError(e) + ' Intenta de nuevo, o toca "No pude tomar la foto".';
+          estado.classList.add('texto-error');
+          return;
+        }
+      }
+      // 2) Abrir el turno. Solo se envía quién y qué camioneta; la hora la pone la base.
       estado.textContent = 'Iniciando turno…';
-      // Solo se envía quién y qué camioneta; la hora la pone la base.
-      const { error: e2 } = await TJE.db.from('turnos').insert({
+      const { data: nuevo, error: e2 } = await TJE.db.from('turnos').insert({
         empresa_id: perfil.empresa_id,
         conductor_id: perfil.conductor_id,
         vehiculo_id: v.id
-      });
+      }).select('id').single();
       if (e2) {
         btn.disabled = false;
         estado.textContent = mensajeError(e2);
         estado.classList.add('texto-error');
         return;
       }
+      // 3) Guardar la lectura del tablero. Si falla, el turno igual queda abierto
+      //    y en la pantalla del turno se ofrece reintentar.
+      const fila = filaLectura(perfil, nuevo.id, v, 'inicio', datos);
+      try { await guardarLectura(fila); } catch (e) { pendientes.push(fila); }
       location.hash = '#turno'; // vuelve a la pantalla del turno abierto
     });
   }
@@ -204,6 +369,8 @@
     cont.innerHTML =
       (otraCamioneta ? '<p class="aviso aviso-error">Ya tienes un turno abierto en otra camioneta. Ciérralo antes de iniciar uno nuevo.</p>' : '') +
       '<p class="aviso aviso-ok">Turno abierto ✓</p>' +
+      (pendientes.length ? '<div class="aviso aviso-error" id="tur-pend">No se pudo guardar el km del tablero al iniciar. ' +
+        '<button type="button" class="btn btn-secundario" id="tur-reint-pend">Reintentar</button></div>' : '') +
       tarjetaCamioneta(v) +
       '<section class="panel">' +
         '<dl class="lista-datos">' +
@@ -211,38 +378,64 @@
           fila('Inicio', esc(horaCorta(t.inicio))) +
           fila('Tiempo en turno', '<span id="tur-duracion">' + esc(duracion(t.inicio)) + '</span>') +
         '</dl>' +
+        bloqueTablero('cierre') +
         '<button type="button" class="btn btn-secundario" id="tur-cerrar">Cerrar turno</button>' +
         '<p id="tur-estado" class="sub" hidden></p>' +
       '</section>';
     mostrarFoto(v, turno);
 
+    const reint = document.getElementById('tur-reint-pend');
+    if (reint) reint.addEventListener('click', async () => {
+      reint.disabled = true;
+      const fallan = await guardarVarias(pendientes.splice(0));
+      pendientes.push(...fallan);
+      if (fallan.length) { reint.disabled = false; return; }
+      document.getElementById('tur-pend').remove();
+    });
+
+    const tablero = activarTablero();
     document.getElementById('tur-cerrar').addEventListener('click', async (ev) => {
+      const datos = tablero.validar();
+      if (!datos) return;
       if (!confirm('¿Cerrar tu turno en la camioneta ' + formatoPatente(v.patente) + '?')) return;
       const btn = ev.currentTarget;
       const estado = document.getElementById('tur-estado');
       btn.disabled = true;
       estado.hidden = false;
       estado.classList.remove('texto-error');
-      estado.textContent = 'Cerrando turno…';
-      // La hora de término también la pone la base (ver SQL 06).
-      const { error } = await TJE.db.from('turnos').update({ fin: new Date().toISOString() }).eq('id', t.id);
-      mostrandoAbierto = false;
-      if (error) {
-        // La oficina ya lo había cerrado: no es un error, solo se avisa.
-        if (String(error.message || '').includes('ya está cerrado')) {
-          cont.innerHTML = '<p class="aviso aviso-ok">La oficina ya había cerrado este turno ✓</p>' +
-            '<a class="btn btn-secundario" href="#ficha">Ir a Mi ficha</a>';
+      // 1) La foto primero: si falla, el turno sigue abierto y se puede reintentar.
+      if (datos.blob) {
+        estado.textContent = 'Subiendo foto…';
+        try {
+          await subirTablero(rutaTablero(perfil, v, datos), datos.blob);
+        } catch (e) {
+          btn.disabled = false;
+          estado.textContent = 'No se pudo subir la foto. ' + mensajeError(e) + ' Intenta de nuevo, o toca "No pude tomar la foto".';
+          estado.classList.add('texto-error');
           return;
         }
-        mostrandoAbierto = true;
-        btn.disabled = false;
-        estado.textContent = mensajeError(error);
-        estado.classList.add('texto-error');
-        return;
       }
-      cont.innerHTML = '<p class="aviso aviso-ok">Turno cerrado ✓ Buen descanso.</p>' +
-        '<a class="btn btn-secundario" href="#ficha">Ir a Mi ficha</a>';
+      // 2) Cerrar el turno. La hora de término también la pone la base (ver SQL 06).
+      estado.textContent = 'Cerrando turno…';
+      const { error } = await TJE.db.from('turnos').update({ fin: new Date().toISOString() }).eq('id', t.id);
+      mostrandoAbierto = false;
+      let textoOk = 'Turno cerrado ✓ Buen descanso.';
+      if (error) {
+        // La oficina ya lo había cerrado: no es un error, solo se avisa
+        // (el km del tablero igual se guarda).
+        if (String(error.message || '').includes('ya está cerrado')) {
+          textoOk = 'La oficina ya había cerrado este turno ✓';
+        } else {
+          mostrandoAbierto = true;
+          btn.disabled = false;
+          estado.textContent = mensajeError(error);
+          estado.classList.add('texto-error');
+          return;
+        }
+      }
       if (location.hash !== '#turno') history.replaceState(null, '', '#turno');
+      // 3) Guardar la lectura del cierre (y la del inicio, si había quedado pendiente)
+      await pantallaCerrado(cont, textoOk, [...pendientes.splice(0), filaLectura(perfil, t.id, v, 'cierre', datos)]);
     });
   }
 
@@ -259,6 +452,7 @@
     if (Date.now() - ultimaConsulta < 30000) return;
     const btn = document.getElementById('tur-cerrar');
     if (btn && btn.disabled) return; // está cerrando en este momento
+    if (tableroConDatos()) return;   // no borrar el km ni la foto que el chofer ya puso
     pintar(ultimo.cont, ultimo.perfil, []);
   });
 

@@ -28,6 +28,7 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 
 ## Versiones
 
+- **v0.9.1** · En **Mi turno**, el chofer anota el km del tablero y toma una foto al iniciar y al cerrar el turno. Si no puede tomar la foto, escribe el motivo y el turno sigue igual. Se verifica en Gastos > Tablero. Cambia solo `js/turno.js` (más estilos). Sin SQL nuevo.
 - **v0.9.0** · Nuevo menú **Gastos** (oficina y admin) con tres pestañas: Gastos (combustible, mantención, peaje, otro; foto de boleta opcional), Tablero (verificar el km que anota el chofer contra la foto) y Costos (total, costo por km y km por litro por camioneta). Requiere SQL 08. El chofer todavía no toma la foto del tablero (llega en v0.9.1).
 - **v0.8.1** · Escanear el QR de una camioneta con sesión de admin u oficina abre la ficha de la camioneta (el chofer sigue yendo a "Mi turno"); botón "Documentos" en la ficha de la camioneta; la hora de cierre de un turno la pone siempre la base de datos, también cuando cierra la oficina (SQL 07).
 - **v0.8.0** · Inicio pasa a ser un tablero: 4 indicadores, lista "Requiere atención" (documentos vencidos y por vencer, turnos abiertos más de 12 horas, camionetas detenidas, documentos sin registrar) y camionetas en turno ahora.

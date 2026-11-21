@@ -433,3 +433,11 @@ a.doc-contador:hover { background: var(--panel-2); }
 .gas-verificar .foto-marco img { width: 100%; height: auto; object-fit: contain; }
 .gas-km { font-size: 22px; }
 @media (min-width: 900px) { .gas-verificar { grid-template-columns: 3fr 2fr; align-items: start; } }
+
+/* ---- Foto del tablero en Mi turno (v0.9.1) ---- */
+.tablero-bloque { margin: 14px 0 12px; padding: 12px; border: 1px solid var(--borde); border-radius: 10px; }
+.tb-titulo { margin: 0 0 2px; }
+.tb-boton { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 12px; cursor: pointer; text-align: center; }
+.tb-vista img { width: 100%; max-height: 240px; object-fit: contain; border-radius: 8px; margin-top: 10px; }
+.btn-enlace { background: none; border: 0; padding: 12px 0 2px; color: inherit; text-decoration: underline; font-size: 14px; cursor: pointer; display: block; }
+#tur-pend .btn { margin-left: 8px; }
