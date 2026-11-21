@@ -21,6 +21,7 @@
     qr: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M18 18h3v3"/>',
     empresa: '<path d="M4 21V5l8-2v18"/><path d="M12 9h8v12"/><path d="M3 21h18"/><path d="M8 8v.01M8 12v.01M8 16v.01M16 13v.01M16 17v.01"/>',
     mas: '<rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/>',
+    gasto: '<path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16"/><path d="M3 21h12"/><path d="M7 7h4v4H7z"/><path d="M14 9h2a2 2 0 0 1 2 2v6a1.5 1.5 0 0 0 3 0V8l-3-3"/>',
     salir: '<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/>'
   };
   const icono = (n) =>
@@ -42,6 +43,7 @@
     { id: 'rutas', txt: 'Rutas', ic: 'ruta' },
     { id: 'documentos', txt: 'Documentos', ic: 'documento' },
     { id: 'mantencion', txt: 'Mantención', ic: 'llave' },
+    { id: 'gastos', txt: 'Gastos', ic: 'gasto' },
     { id: 'reportes', txt: 'Reportes', ic: 'reportes', barra: true },
     { id: 'alertas', txt: 'Alertas', ic: 'alertas' },
     { id: 'ajustes', txt: 'Ajustes', ic: 'ajustes' }

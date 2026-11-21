@@ -23,10 +23,12 @@ App web (HTML + JavaScript) publicada en GitHub Pages, con base de datos en Supa
 | `js/turno.js` | Módulo "Mi turno" del chofer: escanear el QR de la camioneta, iniciar y cerrar el turno |
 | `js/turnos.js` | Módulo "Turnos" de la oficina: quién tiene qué camioneta ahora, historial de 7 días y cerrar un turno olvidado |
 | `js/documentos.js` | Módulo Documentos: papeles de cada camioneta y chofer con vencimiento, semáforo y archivo adjunto; "Mis documentos" del chofer |
+| `js/gastos.js` | Módulo Gastos (oficina y admin): gastos por camioneta y mes con foto de boleta, verificación de las lecturas del tablero (foto al lado del km anotado) y costos por camioneta ($/km, km/litro) |
 | `js/inicio.js` | Tablero de Inicio (oficina y admin): camionetas operativas, turnos abiertos, documentos vencidos y por vencer, y la lista "Requiere atención" |
 
 ## Versiones
 
+- **v0.9.0** · Nuevo menú **Gastos** (oficina y admin) con tres pestañas: Gastos (combustible, mantención, peaje, otro; foto de boleta opcional), Tablero (verificar el km que anota el chofer contra la foto) y Costos (total, costo por km y km por litro por camioneta). Requiere SQL 08. El chofer todavía no toma la foto del tablero (llega en v0.9.1).
 - **v0.8.1** · Escanear el QR de una camioneta con sesión de admin u oficina abre la ficha de la camioneta (el chofer sigue yendo a "Mi turno"); botón "Documentos" en la ficha de la camioneta; la hora de cierre de un turno la pone siempre la base de datos, también cuando cierra la oficina (SQL 07).
 - **v0.8.0** · Inicio pasa a ser un tablero: 4 indicadores, lista "Requiere atención" (documentos vencidos y por vencer, turnos abiertos más de 12 horas, camionetas detenidas, documentos sin registrar) y camionetas en turno ahora.
 - **v0.7.0** · Módulo Documentos (oficina y admin): permiso de circulación, revisión técnica, emisión de gases, SOAP, seguro y padrón por camioneta; licencia por chofer. Semáforo con el peor documento, aviso 30 días antes del vencimiento, foto (reducida) o PDF adjunto. "Mis documentos" para el chofer (solo lectura).
