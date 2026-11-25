@@ -441,3 +441,16 @@ a.doc-contador:hover { background: var(--panel-2); }
 .tb-vista img { width: 100%; max-height: 240px; object-fit: contain; border-radius: 8px; margin-top: 10px; }
 .btn-enlace { background: none; border: 0; padding: 12px 0 2px; color: inherit; text-decoration: underline; font-size: 14px; cursor: pointer; display: block; }
 #tur-pend .btn { margin-left: 8px; }
+
+/* ---------- v0.9.2 · Ajustes (Bodegas) ---------- */
+.panel-cabecera { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+.panel-cabecera h2 { margin-bottom: 0; }
+.fila-bodega { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--borde); }
+.fila-bodega:last-child { border-bottom: 0; }
+.fila-bodega.inactiva .fila-bodega-datos strong { color: var(--texto-2); }
+.fila-bodega-datos { flex: 1 1 200px; display: grid; gap: 2px; min-width: 0; }
+.fila-bodega-datos .sub { margin: 0; overflow-wrap: anywhere; }
+.fila-bodega-acciones { display: flex; gap: 8px; margin-left: auto; }
+.punto-color { width: 16px; height: 16px; border-radius: 50%; flex: none; border: 1px solid rgba(255,255,255,.25); }
+.btn-peligro-suave { color: #fca5a5; }
+.entrada-color { width: 100%; height: 44px; padding: 4px; cursor: pointer; }
