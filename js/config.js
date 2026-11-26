@@ -6,7 +6,7 @@
 // ⚠️ NUNCA pegar aquí la Secret key ni la service_role.
 // =====================================================================
 window.TJE_CONFIG = {
-  version: '0.9.4',
+  version: '0.9.5',
   supabaseUrl: 'https://nlokvinfcydhllkcpobe.supabase.co',
   supabaseKey: 'sb_publishable_UGcwKQrhz5ERI65LnZbfFQ_ql6WFCkm'
 };

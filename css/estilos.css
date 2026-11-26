@@ -467,3 +467,7 @@ a.doc-contador:hover { background: var(--panel-2); }
 }
 .volver::first-letter { font-size: 1.35em; }
 .volver:hover, .volver:focus-visible { background: #f5c518; color: #07111f; }
+
+/* v0.9.5 · Aviso de conexión lenta (con botón Reintentar) */
+.aviso-lenta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.aviso-lenta .btn { min-height: 44px; font-size: 16px; font-weight: 700; }

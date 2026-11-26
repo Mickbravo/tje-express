@@ -161,8 +161,31 @@
     window.scrollTo(0, 0);
     $('contenido').scrollTop = 0;
     const modulo = (window.TJE_MODULOS || {})[item.id];
+    vigilarCarga();
     if (modulo) return modulo.pintar($('contenido'), perfil, item.id === id ? resto : []);
     pintarProximamente(item);
+  }
+
+  // ---------- Aviso de conexión lenta ----------
+  // Si una pantalla sigue en "Cargando…" pasados unos segundos, avisa en vez de dejar al usuario esperando
+  // sin saber qué pasa. No hace consultas extra: solo mira la pantalla. Reintentar vuelve a pintarla.
+  let vigilante = null;
+  const SEGUNDOS_LENTA = 10;
+  function vigilarCarga() {
+    clearTimeout(vigilante);
+    vigilante = setTimeout(() => {
+      const cont = $('contenido');
+      if (!cont || !cont.textContent.includes('Cargando') || cont.querySelector('.aviso-lenta')) return;
+      const sinRed = navigator.onLine === false;
+      const aviso = document.createElement('div');
+      aviso.className = 'aviso aviso-atencion aviso-lenta';
+      aviso.setAttribute('role', 'alert');
+      aviso.innerHTML =
+        '<span>' + (sinRed ? 'Sin conexión a internet. Revisa tu WiFi o tus datos.' : 'Está tardando más de lo normal. Puede ser tu conexión.') + '</span>' +
+        '<button type="button" class="btn btn-secundario">Reintentar</button>';
+      aviso.querySelector('button').addEventListener('click', () => irA(location.hash.slice(1)));
+      cont.prepend(aviso);
+    }, SEGUNDOS_LENTA * 1000);
   }
 
   // Busca la camioneta por el código del QR y abre su ficha (una consulta chica).
