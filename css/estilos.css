@@ -458,3 +458,12 @@ a.doc-contador:hover { background: var(--panel-2); }
 /* v0.9.3 · Las filas de la pantalla no se aplastan cuando hay mucho contenido
    (arregla la fila de pestañas de Gastos que quedaba reducida a una línea) */
 .contenido { grid-auto-rows: max-content; }
+
+/* v0.9.4 · Flecha de retroceso bien visible (botón grande con borde amarillo) */
+.volver {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 20px;
+  font-size: 19px; font-weight: 700; color: var(--texto);
+  background: var(--panel-2); border: 2px solid #f5c518; border-radius: 10px;
+}
+.volver::first-letter { font-size: 1.35em; }
+.volver:hover, .volver:focus-visible { background: #f5c518; color: #07111f; }
