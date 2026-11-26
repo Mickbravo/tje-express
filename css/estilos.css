@@ -454,3 +454,7 @@ a.doc-contador:hover { background: var(--panel-2); }
 .punto-color { width: 16px; height: 16px; border-radius: 50%; flex: none; border: 1px solid rgba(255,255,255,.25); }
 .btn-peligro-suave { color: #fca5a5; }
 .entrada-color { width: 100%; height: 44px; padding: 4px; cursor: pointer; }
+
+/* v0.9.3 · Las filas de la pantalla no se aplastan cuando hay mucho contenido
+   (arregla la fila de pestañas de Gastos que quedaba reducida a una línea) */
+.contenido { grid-auto-rows: max-content; }
